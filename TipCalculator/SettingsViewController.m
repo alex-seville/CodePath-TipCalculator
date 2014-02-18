@@ -1,0 +1,60 @@
+//
+//  SettingsViewController.m
+//  TipCalculator
+//
+//  Created by Alex Southern on 2/17/2014.
+//  Copyright (c) 2014 Alex Southern. All rights reserved.
+//
+
+#import "SettingsViewController.h"
+
+@interface SettingsViewController ()
+- (IBAction)onTap:(id)sender;
+@property (weak, nonatomic) IBOutlet UITextField *midpointTextField;
+@property (weak, nonatomic) IBOutlet UITextField *offsetTextField;
+
+@end
+
+@implementation SettingsViewController
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        // Custom initialization
+    }
+    return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (IBAction)onTap:(id)sender {
+    
+    int midpoint = [self.midpointTextField.text intValue];
+    int offset = [self.offsetTextField.text intValue];
+    
+    if (midpoint > 100){
+        //warn user
+    } else if (offset > midpoint){
+        //offset cannot be larger than the midpoint
+    } else if (midpoint - offset < 0){
+        //offset from midpoint cannot go below 0
+    } else {
+    
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        [defaults setInteger:midpoint forKey:@"midpoint"];
+        [defaults setInteger:offset forKey:@"offset"];
+        [defaults synchronize];
+    }
+}
+@end
