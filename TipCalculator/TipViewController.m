@@ -16,9 +16,11 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *tipControl;
 @property int midpoint;
 @property int offset;
+@property NSArray *tipValues;
 
 - (IBAction)onTap:(id)sender;
 - (void)updateValues;
+- (void)updateLabels;
 - (void)onSettingsButton;
 
 @end
@@ -40,11 +42,13 @@
     [super viewDidLoad];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStylePlain target:self action:@selector(onSettingsButton)];
     
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    self.midpoint = [defaults integerForKey:@"midpoint"];
-    self.offset = [defaults integerForKey:@"offset"];
-    
+    [self updateLabels];
     // Do any additional setup after loading the view from its nib.
+    [self updateValues];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [self updateLabels];
     [self updateValues];
 }
 
@@ -59,12 +63,33 @@
     [self updateValues];
 }
 
+- (void)updateLabels {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    self.midpoint = [defaults integerForKey:@"midpoint"];
+    self.offset = [defaults integerForKey:@"offset"];
+    
+    if (self.midpoint < 1){
+        self.midpoint = 15;
+    }
+    if (self.offset < 1){
+        self.offset = 5;
+    }
+    
+    [self.tipControl setTitle:[NSString stringWithFormat:@"%d%%", self.midpoint-self.offset] forSegmentAtIndex:0 ];
+    [self.tipControl setTitle:[NSString stringWithFormat:@"%d%%", self.midpoint] forSegmentAtIndex:1 ];
+    [self.tipControl setTitle:[NSString stringWithFormat:@"%d%%", self.midpoint+self.offset] forSegmentAtIndex:2 ];
+    
+    self.tipValues = @[@((float)(self.midpoint-self.offset)/100), @((float)self.midpoint/100), @((float)(self.midpoint+self.offset)/100) ];
+    
+
+}
+
 - (void)updateValues {
     
     float billAmount = [self.billTextField.text floatValue];
-    NSArray *tipValues = @[@((self.midpoint-self.offset)/100), @(self.midpoint/100), @((self.midpoint+self.offset)/100) ];
     
-    float tipAmount = billAmount * [tipValues[self.tipControl.selectedSegmentIndex] floatValue];
+    
+    float tipAmount = billAmount * [self.tipValues[self.tipControl.selectedSegmentIndex] floatValue];
     
     float totalAmount = tipAmount + billAmount;
     self.tipLabel.text = [NSString stringWithFormat:@"$%0.2f", tipAmount];

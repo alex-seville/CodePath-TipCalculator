@@ -30,6 +30,10 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    self.midpointTextField.text = [defaults stringForKey:@"midpoint"];
+    self.offsetTextField.text = [defaults stringForKey:@"offset"];
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -39,6 +43,7 @@
 }
 
 - (IBAction)onTap:(id)sender {
+    [self.view endEditing:YES];
     
     int midpoint = [self.midpointTextField.text intValue];
     int offset = [self.offsetTextField.text intValue];
